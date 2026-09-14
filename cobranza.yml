@@ -1,0 +1,61 @@
+name: Cobranza Automatizada Semanal
+
+on:
+  schedule:
+    # Corre TODOS LOS DIAS 09:00 hora Ecuador (UTC-5) = 14:00 UTC.
+    # La periodicidad REAL por canal (diaria/semanal/quincenal/mensual) no
+    # se define aqui -- se define en la hoja "Parametros" del Google Sheet,
+    # que el script lee en cada corrida para decidir que canal procesar hoy.
+    - cron: "0 14 * * *"
+  workflow_dispatch:
+    # Permite ejecutarlo manualmente desde la pestana "Actions" de GitHub,
+    # util para probar sin esperar al proximo horario programado.
+
+jobs:
+  cobranza:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write   # OBLIGATORIO para Workload Identity Federation
+
+    steps:
+      - name: Descargar el repositorio
+        uses: actions/checkout@v4
+
+      - name: Autenticar con Google Cloud (Workload Identity Federation, sin clave JSON)
+        uses: google-github-actions/auth@v3
+        with:
+          workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.GCP_SERVICE_ACCOUNT_EMAIL }}
+
+      - name: Configurar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Instalar dependencias
+        run: pip install -r requirements.txt
+
+      - name: Ejecutar bot de cobranza
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          GOOGLE_SHEET_ID_MAESTRO: ${{ secrets.GOOGLE_SHEET_ID_MAESTRO }}
+          SMTP_HOST: ${{ secrets.SMTP_HOST }}
+          SMTP_PORT: ${{ secrets.SMTP_PORT }}
+          SMTP_USER: ${{ secrets.SMTP_USER }}
+          SMTP_PASSWORD: ${{ secrets.SMTP_PASSWORD }}
+          EMAIL_REMITENTE: ${{ secrets.EMAIL_REMITENTE }}
+          TWILIO_ACCOUNT_SID: ${{ secrets.TWILIO_ACCOUNT_SID }}
+          TWILIO_AUTH_TOKEN: ${{ secrets.TWILIO_AUTH_TOKEN }}
+          TWILIO_WHATSAPP_FROM: ${{ secrets.TWILIO_WHATSAPP_FROM }}
+          TWILIO_SMS_FROM: ${{ secrets.TWILIO_SMS_FROM }}
+          NOMBRE_EMPRESA: ${{ secrets.NOMBRE_EMPRESA }}
+          MODO_PRUEBA: ${{ secrets.MODO_PRUEBA }}
+        run: python main.py
+
+      - name: Subir los PDFs de evidencia (uno por entidad) como artefacto descargable
+        uses: actions/upload-artifact@v4
+        with:
+          name: evidencia-cobranza-${{ github.run_number }}
+          path: reportes/*.pdf
+          retention-days: 90
