@@ -24,7 +24,8 @@ GOOGLE_SHEET_ID_MAESTRO = os.getenv("GOOGLE_SHEET_ID_MAESTRO")
 
 # --- Email (Amazon SES via SMTP) ---
 SMTP_HOST = os.getenv("SMTP_HOST")
-SMTP_PORT = int(os.getenv("SMTP_PORT", "587"))
+_smtp_port_raw = os.getenv("SMTP_PORT", "587").strip()
+SMTP_PORT = int(_smtp_port_raw) if _smtp_port_raw else 587
 SMTP_USER = os.getenv("SMTP_USER")
 SMTP_PASSWORD = os.getenv("SMTP_PASSWORD")
 EMAIL_REMITENTE = os.getenv("EMAIL_REMITENTE")
