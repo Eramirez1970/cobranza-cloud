@@ -213,7 +213,9 @@ def main():
         except Exception as error:
             # Una entidad con problemas (ej. Sheet sin compartir con la
             # Service Account) NUNCA debe tumbar el proceso de las demas.
-            print(f"  [ERROR] Fallo procesando '{nombre}': {error}")
+            detalle = str(error) or f"{type(error).__name__} (sin mensaje -- revisa que el Sheet este compartido con la Service Account y que el sheet_id sea correcto)"
+            print(f"  [ERROR] Fallo procesando '{nombre}': {detalle}")
+      
             resultados["error"].append(nombre)
 
     print("\n=== RESUMEN GENERAL DE LA CORRIDA ===")
