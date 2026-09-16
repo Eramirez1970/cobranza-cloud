@@ -54,6 +54,17 @@ def _dias_mora(fecha_vencimiento_str: str) -> int | None:
             continue
     return None
 
+def _normalizar_telefono(valor) -> str:
+    """
+    Normaliza un numero de telefono venido de Google Sheets: lo convierte a
+    texto y le agrega el '+' si falta. Existe porque Sheets convierte un '+'
+    inicial en una formula, asi que en el Sheet se guarda SIN el '+' (solo
+    codigo de pais + numero, ej: 593991234567) y el sistema se lo agrega aqui.
+    """
+    texto = str(valor).strip() if valor else ""
+    if texto and not texto.startswith("+"):
+        texto = "+" + texto
+    return texto
 
 def procesar_notificaciones(sheet_id: str):
     """Procesa las notificaciones pendientes de UNA entidad (su propio sheet_id)."""
@@ -134,9 +145,9 @@ def procesar_notificaciones(sheet_id: str):
                                            f"Recordatorio de pago - Factura {d.get('numero_factura')}",
                                            mensaje)
         elif canal == "whatsapp":
-            exito, detalle = enviar_whatsapp(d.get("whatsapp"), mensaje)
+            exito, detalle = enviar_whatsapp(_normalizar_telefono(d.get("whatsapp")), mensaje)
         elif canal == "sms":
-            exito, detalle = enviar_sms(d.get("telefono_sms"), mensaje)
+            exito, detalle = enviar_sms(_normalizar_telefono(d.get("telefono_sms")), mensaje)
         else:
             exito, detalle = False, f"canal desconocido: {canal}"
 
