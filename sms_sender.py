@@ -16,7 +16,7 @@ def enviar_sms(numero_destino: str, cuerpo: str) -> tuple[bool, str]:
     numero_destino debe incluir codigo de pais, ej: +593991234567
     Devuelve (exito: bool, detalle: str / sid del mensaje).
     """
-    if not numero_destino or not numero_destino.startswith("+"):
+    if not numero_destino or not str(numero_destino).startswith("+"):
         return False, "numero de sms invalido (debe incluir +codigo_pais)"
 
     if MODO_PRUEBA:
