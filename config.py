@@ -36,6 +36,11 @@ TWILIO_ACCOUNT_SID = os.getenv("TWILIO_ACCOUNT_SID")
 TWILIO_AUTH_TOKEN = os.getenv("TWILIO_AUTH_TOKEN")
 TWILIO_WHATSAPP_FROM = os.getenv("TWILIO_WHATSAPP_FROM")
 TWILIO_SMS_FROM = os.getenv("TWILIO_SMS_FROM")
+# ID de la plantilla de WhatsApp aprobada por Meta (Content Template Builder
+# de Twilio). WhatsApp Business API exige una plantilla aprobada para el
+# primer contacto con cada deudor -- no se puede usar texto libre generado
+# por Claude para ese primer mensaje. Ver canales/whatsapp_sender.py.
+TWILIO_WHATSAPP_CONTENT_SID = os.getenv("TWILIO_WHATSAPP_CONTENT_SID")
 
 # --- Reglas de negocio ---
 UMBRAL_LEVE_MAX = int(os.getenv("UMBRAL_LEVE_MAX", "30"))
