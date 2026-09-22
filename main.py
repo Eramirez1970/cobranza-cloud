@@ -130,26 +130,36 @@ def procesar_notificaciones(sheet_id: str):
 
         print(f"    [{d.get('id_cliente')}] {d.get('nombre_completo')} | {dias_mora}d mora | "
               f"segmento={segmento} | canal={canal}")
-
         monto = float(d.get("monto_adeudado") or 0)
         moneda = d.get("moneda") or "USD"
+        numero_factura = str(d.get("numero_factura"))
 
-        mensaje = generar_mensaje(
-            nombre=d.get("nombre_completo"), monto=monto, moneda=moneda,
-            dias_mora=dias_mora, numero_factura=str(d.get("numero_factura")),
-            segmento=segmento, canal=canal, urgencia=urgencia,
-        )
-
-        if canal == "email":
-            exito, detalle = enviar_email(d.get("email"),
-                                           f"Recordatorio de pago - Factura {d.get('numero_factura')}",
-                                           mensaje)
-        elif canal == "whatsapp":
-            exito, detalle = enviar_whatsapp(_normalizar_telefono(d.get("whatsapp")), mensaje)
-        elif canal == "sms":
-            exito, detalle = enviar_sms(_normalizar_telefono(d.get("telefono_sms")), mensaje)
+        if canal == "whatsapp":
+            content_variables = {
+                "1": str(d.get("nombre_completo") or ""),
+                "2": moneda,
+                "3": f"{monto:,.2f}",
+                "4": numero_factura,
+                "5": str(dias_mora),
+            }
+            mensaje = (f"Hola {d.get('nombre_completo')}, tienes un saldo pendiente de "
+                       f"{moneda} {monto:,.2f} (factura {numero_factura}), vencido hace "
+                       f"{dias_mora} dias. Por favor contactanos para regularizar tu pago.")
+            exito, detalle = enviar_whatsapp(_normalizar_telefono(d.get("whatsapp")), content_variables)
         else:
-            exito, detalle = False, f"canal desconocido: {canal}"
+            mensaje = generar_mensaje(
+                nombre=d.get("nombre_completo"), monto=monto, moneda=moneda,
+                dias_mora=dias_mora, numero_factura=numero_factura,
+                segmento=segmento, canal=canal, urgencia=urgencia,
+            )
+            if canal == "email":
+                exito, detalle = enviar_email(d.get("email"),
+                                               f"Recordatorio de pago - Factura {numero_factura}",
+                                               mensaje)
+            elif canal == "sms":
+                exito, detalle = enviar_sms(_normalizar_telefono(d.get("telefono_sms")), mensaje)
+            else:
+                exito, detalle = False, f"canal desconocido: {canal}"
 
         sheets.actualizar_estado_deudor(
             ws_deudores, fila_real, col, segmento, canal,
