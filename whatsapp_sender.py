@@ -13,6 +13,11 @@ _client = None
 if TWILIO_ACCOUNT_SID and TWILIO_AUTH_TOKEN:
     _client = Client(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN)
 
+# DEBUG TEMPORAL: confirma, sin exponer el secreto completo, si
+# TWILIO_WHATSAPP_FROM tiene el prefijo correcto y su longitud.
+print(f"  [DEBUG] TWILIO_WHATSAPP_FROM -> longitud={len(TWILIO_WHATSAPP_FROM or '')}, "
+      f"empieza_con_whatsapp:={str(TWILIO_WHATSAPP_FROM or '').startswith('whatsapp:')}, "
+      f"ultimos_4={str(TWILIO_WHATSAPP_FROM or '')[-4:]}")
 
 def enviar_whatsapp(numero_destino: str, cuerpo: str) -> tuple[bool, str]:
     """
