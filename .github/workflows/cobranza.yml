@@ -51,6 +51,7 @@ jobs:
           TWILIO_SMS_FROM: ${{ secrets.TWILIO_SMS_FROM }}
           NOMBRE_EMPRESA: ${{ secrets.NOMBRE_EMPRESA }}
           MODO_PRUEBA: ${{ secrets.MODO_PRUEBA }}
+          TWILIO_WHATSAPP_CONTENT_SID: ${{ secrets.TWILIO_WHATSAPP_CONTENT_SID }}
         run: python main.py
 
       - name: Subir los PDFs de evidencia (uno por entidad) como artefacto descargable
