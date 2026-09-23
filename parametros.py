@@ -27,7 +27,7 @@ vez que corre el script, si la hoja no existe todavia):
   umbral_media_max    dias de mora hasta los que un deudor es "media"
                        (mas alla de esto, es "critica")
 """
-from datetime import date
+from datetime import date, datetime
 
 DIAS_SEMANA_ES = {
     0: "lunes", 1: "martes", 2: "miercoles", 3: "jueves",
@@ -90,6 +90,27 @@ def canal_corresponde_hoy(parametros: dict, canal: str, hoy: date = None) -> boo
 
     return False
 
+def es_feriado_hoy(parametros: dict, hoy: date = None) -> bool:
+    """
+    Cumple el Art. 49 de la Ley Organica de Defensa del Consumidor: prohibido
+    gestionar cobros en feriados. Lee la lista de fechas del parametro
+    "feriados" (AAAA-MM-DD separadas por coma) y devuelve True si hoy esta
+    en esa lista.
+    """
+    hoy = hoy or date.today()
+    feriados_raw = parametros.get("feriados", "").strip()
+    if not feriados_raw:
+        return False
+
+    fechas = [f.strip() for f in feriados_raw.split(",") if f.strip()]
+    for fecha_str in fechas:
+        try:
+            fecha_feriado = datetime.strptime(fecha_str, "%Y-%m-%d").date()
+            if fecha_feriado == hoy:
+                return True
+        except ValueError:
+            continue
+    return False
 
 def umbrales_desde_parametros(parametros: dict, umbral_leve_default: int,
                                umbral_media_default: int) -> tuple[int, int]:
