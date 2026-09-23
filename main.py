@@ -36,7 +36,7 @@ from estadisticas import (
     calcular_resumen_mensual, semana_iso_de, anio_mes_de,
 )
 from reporte_pdf import generar_pdf_evidencia
-from parametros import parsear_parametros, canal_corresponde_hoy, umbrales_desde_parametros
+from parametros import parsear_parametros, canal_corresponde_hoy, umbrales_desde_parametros, es_feriado_hoy
 import sheets_client as sheets
 
 
@@ -72,6 +72,11 @@ def procesar_notificaciones(sheet_id: str):
     parametros = parsear_parametros(sheets.leer_parametros(sheet_id))
     umbral_leve, umbral_media = umbrales_desde_parametros(
         parametros, UMBRAL_LEVE_DEFAULT, UMBRAL_MEDIA_DEFAULT)
+
+    if es_feriado_hoy(parametros):
+        print("  Hoy es feriado (Art. 49 Ley Organica de Defensa del Consumidor: "
+              "prohibido gestionar cobros en feriados). Se omite la corrida completa.")
+        return
 
     canales_hoy = {
         canal: canal_corresponde_hoy(parametros, canal)
