@@ -49,6 +49,8 @@ VALORES_POR_DEFECTO = [
 
     ("umbral_leve_max", "30", "Dias de mora maximos para considerar un deudor 'leve'"),
     ("umbral_media_max", "60", "Dias de mora maximos para considerar un deudor 'media' (mas alla es 'critica')"),
+
+    ("feriados", "", "Fechas AAAA-MM-DD separadas por coma en las que NO se procesa ningun envio (Art. 49 Ley Organica de Defensa del Consumidor: prohibido gestionar cobros en feriados). Actualizar cada año con el calendario oficial de feriados de Ecuador."),
 ]
 
 
