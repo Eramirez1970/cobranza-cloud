@@ -36,9 +36,12 @@ def enviar_whatsapp(numero_destino: str, content_variables: dict) -> tuple[bool,
 
     if _client is None:
         return False, "credenciales de Twilio no configuradas"
-
+   
     if not TWILIO_WHATSAPP_CONTENT_SID:
         return False, "falta TWILIO_WHATSAPP_CONTENT_SID (ID de la plantilla aprobada)"
+
+    print(f"  [DEBUG] TWILIO_WHATSAPP_CONTENT_SID -> longitud={len(TWILIO_WHATSAPP_CONTENT_SID or '')}, "
+          f"valor_completo={TWILIO_WHATSAPP_CONTENT_SID!r}")
 
     try:
         import json
