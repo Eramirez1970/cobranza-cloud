@@ -6,7 +6,7 @@ on:
     # La periodicidad REAL por canal (diaria/semanal/quincenal/mensual) no
     # se define aqui -- se define en la hoja "Parametros" del Google Sheet,
     # que el script lee en cada corrida para decidir que canal procesar hoy.
-    - cron: "0 14 * * *"
+  - cron: "0 14 * * 1-5"
   workflow_dispatch:
     # Permite ejecutarlo manualmente desde la pestana "Actions" de GitHub,
     # util para probar sin esperar al proximo horario programado.
