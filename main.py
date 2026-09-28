@@ -205,6 +205,13 @@ def recalcular_estadisticas_y_pdf(sheet_id: str, nombre_entidad: str) -> str:
     carpeta = f"{CARPETA_REPORTES}"
     ruta_pdf = generar_pdf_evidencia(resumen_semanal, resumen_mensual, stats_deudor,
                                       carpeta, nombre_entidad)
+    from drive_uploader import subir_pdf_a_drive
+    
+    from datetime import datetime as _dt
+    link_drive = subir_pdf_a_drive(ruta_pdf)
+    if link_drive:
+        sheets.registrar_reporte(sheet_id, _dt.now().strftime("%Y-%m-%d %H:%M"),
+                                  os.path.basename(ruta_pdf), link_drive)
     print(f"  PDF de evidencia generado: {ruta_pdf}")
     return ruta_pdf
 
