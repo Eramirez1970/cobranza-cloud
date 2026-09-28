@@ -201,3 +201,12 @@ def escribir_resumen(sheet_id: str, hoja_nombre: str, filas: list[dict]):
     if filas:
         ws.append_rows([[f.get(c, "") for c in COLUMNAS_RESUMEN] for f in filas],
                         value_input_option="USER_ENTERED")
+HOJA_REPORTES = "Reportes"
+COLUMNAS_REPORTES = ["fecha_hora", "archivo", "link_drive"]
+
+
+def registrar_reporte(sheet_id: str, fecha_hora: str, archivo: str, link: str):
+    """Agrega una fila con el link del PDF subido a Drive, para verlo sin salir del Sheet."""
+    sheet = _abrir_sheet(sheet_id)
+    ws = _obtener_o_crear_hoja(sheet, HOJA_REPORTES, COLUMNAS_REPORTES)
+    ws.append_row([fecha_hora, archivo, link], value_input_option="USER_ENTERED")
