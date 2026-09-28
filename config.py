@@ -21,6 +21,7 @@ GOOGLE_CREDENTIALS_JSON = os.getenv("GOOGLE_CREDENTIALS_JSON")  # opcional, ver 
 # GOOGLE_SHEET_ID_MAESTRO: el Sheet de control que lista todas las entidades
 # financieras activas y el sheet_id propio de cada una (pestana "Entidades").
 GOOGLE_SHEET_ID_MAESTRO = os.getenv("GOOGLE_SHEET_ID_MAESTRO")
+GOOGLE_DRIVE_FOLDER_ID = os.getenv("GOOGLE_DRIVE_FOLDER_ID")
 
 # --- Email (Amazon SES via SMTP) ---
 SMTP_HOST = os.getenv("SMTP_HOST")
