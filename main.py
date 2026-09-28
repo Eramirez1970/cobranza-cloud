@@ -21,6 +21,7 @@ Ejecutar:
 Se programa con GitHub Actions (ver .github/workflows/cobranza.yml) -- no
 requiere ningun servidor propio encendido.
 """
+import os
 import sys
 from datetime import datetime, date
 
