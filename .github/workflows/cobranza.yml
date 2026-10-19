@@ -2,7 +2,8 @@ name: Cobranza Automatizada Semanal
 
 on:
   schedule:
-    # Corre TODOS LOS DIAS 09:00 hora Ecuador (UTC-5) = 14:00 UTC.
+    # Corre de LUNES A VIERNES a las 09:00 hora Ecuador (UTC-5) = 14:00 UTC.
+    # Sabados, domingos no corre (Art. 49 de la Ley Organica de Defensa del Consumidor).
     # La periodicidad REAL por canal (diaria/semanal/quincenal/mensual) no
     # se define aqui -- se define en la hoja "Parametros" del Google Sheet,
     # que el script lee en cada corrida para decidir que canal procesar hoy.
@@ -13,14 +14,16 @@ on:
 
 jobs:
   cobranza:
-    runs-on: ubuntu-latest
+    # Version fija del sistema operativo. Evita que el cambio de "ubuntu-latest"
+    # a Ubuntu 26 (desde el 19 de octubre de 2026) rompa las dependencias.
+    runs-on: ubuntu-24.04
     permissions:
       contents: read
       id-token: write   # OBLIGATORIO para Workload Identity Federation
 
     steps:
       - name: Descargar el repositorio
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Autenticar con Google Cloud (Workload Identity Federation, sin clave JSON)
         uses: google-github-actions/auth@v3
@@ -29,7 +32,7 @@ jobs:
           service_account: ${{ secrets.GCP_SERVICE_ACCOUNT_EMAIL }}
 
       - name: Configurar Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: "3.11"
 
@@ -53,11 +56,10 @@ jobs:
           MODO_PRUEBA: ${{ secrets.MODO_PRUEBA }}
           TWILIO_WHATSAPP_CONTENT_SID: ${{ secrets.TWILIO_WHATSAPP_CONTENT_SID }}
           GOOGLE_DRIVE_FOLDER_ID: ${{ secrets.GOOGLE_DRIVE_FOLDER_ID }}
-          
         run: python main.py
 
       - name: Subir los PDFs de evidencia (uno por entidad) como artefacto descargable
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: evidencia-cobranza-${{ github.run_number }}
           path: reportes/*.pdf
